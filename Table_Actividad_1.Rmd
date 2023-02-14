@@ -68,86 +68,135 @@ t2h=t2[6:10,]
 row.names(t2h)=categoria
 ```
 
-Column {data-width=700 .tabset}
+Column {data-width=500 .tabset}
 -----------------------------------------------------------------------
 
-### Tiempos de carrera
-
+### Distribución por Categorias
 ```{r}
-paleta6=c("#447270", "#6B9493", "#F6E271", "#F6B916", "#F69312", "#BC6C25")
-p1=ggplot(CarreraLuz22F, aes(y=timerun/60, x=categoria))+
-  geom_jitter(color="#034A94", size=1, alpha=0.9) +
-  aes(color=paleta6)+
-  labs(title = " ",
-       y= "tiempo - min",
-       x= "categorías")+ 
-  #facet_wrap(~ sex)
-  #facet_grid(vars(sex), scale="free")+
-  ylim(0,170)+
-  Theme2
+paleta6=c("#00EEEE", "#4169E1", "#EE5C42", "#008B00", "#EEEE00", "#FFA54F")
+# install.packages("dplyr")
+# install.packages("scales")
+library(dplyr)
+# Transformación de los datos
 
-p1
+v1 <- CarreraLuz22 %>% 
+  group_by(categoria) %>% # Variable a ser transformada
+  count() %>% 
+  ungroup() %>% 
+  mutate(pcnt = `n` / sum(`n`)) %>% 
+  arrange(pcnt) %>%
+  mutate(etiquetas = scales::percent(pcnt))
+
+p2=ggplot(v1, aes(x="", y=pcnt, fill=categoria)) +
+    geom_col() +
+    scale_fill_manual(values=paleta6)+
+    theme(panel.background = element_rect(fill = "#96CDCD"))+
+    theme(plot.background = element_rect(fill = "#96CDCD"))+
+    theme(plot.background = element_rect(color = "paleturquoise3", # Color del borde
+                                        size = 5))+       # Ancho del borde
+    theme(legend.background = element_rect(fill = "#96CDCD"))+
+    geom_label(aes(label = etiquetas),
+            position = position_dodge(width = 0.5), show.legend = FALSE ) +
+    labs(title = " ",
+        y= "Porcentajes por Categoria",
+        x= "")+
+    coord_polar(theta="y")
+p2
 
 ```
 
 ### Hombre por categorías
 
-```{r, fig.height=3}
-ggplot(CarreraLuz22M, aes(x = categoria, y = timerun/60 )) +
-  geom_boxplot(aes(fill = categoria)) + 
-  # facet_wrap(~sex, ncol=1, labeller = labeller(dose = etiquetas))+
-  labs(title = "", y= "tiempo - min", x= "categorías")+
-  scale_fill_brewer() +
-  #scale_fill_manual(values = c("#00070D", "#012447", "#034A94", "#0570E1", "#3998FB","#37B6FC"))+
-  theme(legend.position = "none")
-t2h
+```{r}
+v2 <- CarreraLuz22M %>% 
+  group_by(categoria) %>% # Variable a ser transformada
+  count() %>% 
+  ungroup() %>% 
+  mutate(pcntm = `n` / sum(`n`)) %>% 
+  arrange(pcntm) %>%
+  mutate(etiquetasm = scales::percent(pcntm))
+p3=ggplot(v2, aes(x="", y=pcntm, fill=categoria)) +
+    geom_col() +
+    scale_fill_manual(values=paleta6)+
+    theme(panel.background = element_rect(fill = "#96CDCD"))+
+    theme(plot.background = element_rect(fill = "#96CDCD"))+
+    theme(plot.background = element_rect(color = "paleturquoise3", # Color del borde
+                                        size = 5))+       # Ancho del borde
+    theme(legend.background = element_rect(fill = "#96CDCD"))+
+    geom_label(aes(label = etiquetasm),
+            position = position_dodge(width = 0.5), show.legend = FALSE ) +
+    labs(title = " ",
+        y= "Porcentajes de Hombres por Categoria",
+        x= "")+
+    coord_polar(theta="y")
+p3
 ```
 
 ### Mujeres por categoría
-```{r, fig.height=3}
-ggplot(CarreraLuz22F, aes(x = categoria, y = timerun/60 )) +
-  geom_boxplot(aes(fill = categoria)) + 
-  # facet_wrap(~sex, ncol=1, labeller = labeller(dose = etiquetas))+
-  labs(title = "", y= "tiempo - min", x= "categorías")+
-  scale_fill_brewer() +
-  #scale_fill_manual(values = c("#00070D", "#012447", "#034A94", "#0570E1", "#3998FB","#37B6FC"))+
-  theme(legend.position = "none")
-t2m
+```{r}
+v3 <- CarreraLuz22F %>% 
+  group_by(categoria) %>% # Variable a ser transformada
+  count() %>% 
+  ungroup() %>% 
+  mutate(pcntf = `n` / sum(`n`)) %>% 
+  arrange(pcntf) %>%
+  mutate(etiquetasf = scales::percent(pcntf))
+p4=ggplot(v3, aes(x="", y=pcntf, fill=categoria)) +
+    geom_col() +
+    scale_fill_manual(values=paleta6)+
+    theme(panel.background = element_rect(fill = "#96CDCD"))+
+    theme(plot.background = element_rect(fill = "#96CDCD"))+
+    theme(plot.background = element_rect(color = "paleturquoise3", # Color del borde
+                                        size = 5))+       # Ancho del borde
+    theme(legend.background = element_rect(fill = "#96CDCD"))+
+    geom_label(aes(label = etiquetasf),
+            position = position_dodge(width = 0.5), show.legend = FALSE ) +
+    labs(title = " ",
+        y= "Porcentajes de Mujeres por Categoria",
+        x= "")+
+    coord_polar(theta="y")
+p4
 ```
 
 ### Más información
 
-**10.07 K** Participantes desde los 15 años en adelante.
+La siguiente tabla muestra la distribución de los rangos de tiempo respecto a los rangos de edad por cada sexo, se puede dar una lectura importante respecto a los hábitos de participación en este tipo de carreras por rangos de edad, por ejemplo en esta carrera se puede observar que las mujeres hasta los 34 años tuvieron una participación considerable respecto a otros rangos de edad, lo cual no sucede con los hombres que hasta los 37 años mostraron participación impportante.
+Participación considerable llamamos al 50% del total de participación o Q2 por sexo.
 
-**Salida**: Hotel Intercontinental, calle 5, Carrera 6, carrera 4c, carrera1, carrera 4, calle de la escopeta, museo arqueológico la merced, bulevar del rio, puente Ortiz, av 2N, parque lineal rio Cali av2n, calle 25, parque lineal av1n, calle 13, carrera 1 calle 12, carrera 5, calle 10, gobernación del valle, edificio Aristi carrera 9, calle 9 plazoleta de san francisco, bulevar del rio, calle 8, carrera 4, carrera 3ª, parque del peñón, carrera 3, carrera 3ª oeste, calle 5 oeste, carrera 4, av Belalcázar, carrera 2ª oeste, librería nacional, carrera 1c, museo la tertulia, av Colombia, pepe ganga, carrera 3, carrera 2, carrera 3ª, av Colombia, carrera 4, meta hotel intercontinental. [juanchocorrelon.com](https://juanchocorrelon.com/intercontinental-10k-luz-2022/#10k)
+
+```{r}
+breaks=c(0,25,50,75,100,125,150,175)
+breaks2=c(10,15,20,25,30,35,40,45,50,55,60,65,70,76)
+Tiempo_Min=cut(CarreraLuz22$timerun/60,breaks)
+Edad.corredores=cut(CarreraLuz22$edad,breaks2)
+p5<-table(Edad.corredores,Tiempo_Min,CarreraLuz22$sex)
+p5
+
+```
+
 
 Column {data-width=400}
 -----------------------------------------------------------------------
 
-### Tiempo mujeres categoría Abierta
+### Rangos de edad por sexo
 
 ```{r}
-# seleccion de bases
-dataFc2=subset(CarreraLuz22, (CarreraLuz22$sex=="Mujer" & CarreraLuz22$categoria=="2. Abierta")) # dataset de mujeres
-x=dataFc2$timerun/60
-hist(x, xlim=c(30,120), ylim=c(0,80),las=1,
-main = " ",
-xlab="tiempo (min)",
-ylab = "frecuencia",
-col ="#ee964b")
+
+ggplot(CarreraLuz22, aes(x = edad, fill = sex)) +
+  geom_density(alpha = 0.5) +    
+  labs(title = " ",
+        y= "Frecuencia",
+        x= "Edad")
 ```
 
-### Tiempo hombres categoría Abierta
+### Rangos de tiempo por sexo
 
 ```{r}
-# seleccion de bases
-dataMc2=subset(CarreraLuz22, (CarreraLuz22$sex=="Hombre" & CarreraLuz22$categoria=="2. Abierta")) # dataset de mujeres
-x=dataMc2$timerun/60
-hist(x, xlim=c(30,120), ylim=c(0,250),las=1,
-main = " ",
-xlab="tiempo (min)",
-ylab = "frecuencia",
-col ="#ee964b")
+ggplot(CarreraLuz22, aes(x = timerun/60, fill = sex)) +
+  geom_density(alpha = 0.5) +    
+  labs(title = " ",
+        y= "Frecuencia",
+        x= "Tiempo")
 ```
 
 Column { data-width=50 }
@@ -203,5 +252,11 @@ valueBox(value = paste(round(mean(CarreraLuz22$timerun/60),2),"min"),
          icon = "  ", 
          color = "#0EB0C6")
 ```
-
+### Quantil Q2  {.value-box}
+```{r}
+valueBox(value = paste(round(quantile(CarreraLuz22$edad,0.5),1),"anios"),
+         caption = "Cuantile Q2 de edad", 
+         icon = "  ", 
+         color = "#0EB0C6")
+```
 
